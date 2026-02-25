@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SEO Dasar -->
-    <title>DramaBox - Nonton Drama Trending & VIP</title>
+    <title>JywaNonton - Nonton Drama Trending & VIP</title>
     <meta name="description"
-        content="Platform streaming drama terbaik untuk akses drama terbaru, trending, dan VIP secara percuma.">
+        content="Platform streaming drama terbaik untuk akses drama terbaru, trending, dan VIP secara gratis.">
     <meta name="keywords"
-        content="dramabox, streaming drama, drama terbaru, drama trending, nonton drama online, drama vip">
+        content="jywanonton, melolo, streaming drama, drama terbaru, drama trending, nonton drama online, drama vip">
     <meta name="author" content="Botraiki">
 
     <!-- Fonts -->
@@ -26,17 +26,24 @@
 </head>
 
 <body>
-    <!-- Loader -->
-    <div class="loader" id="loader">
-        <div class="spinner"></div>
+    <!-- Skeleton Loader -->
+    <div class="skeleton-loader" id="loader">
+        <div class="skeleton-grid">
+            <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
+            <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
+            <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
+            <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
+            <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
+            <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
+        </div>
     </div>
 
     <!-- Header -->
     <header id="main-header">
-        <div class="logo" onclick="location.reload()">DramaBox</div>
+        <div class="logo" onclick="location.reload()">JywaNonton</div>
 
         <div class="search-container">
-            <input type="text" id="search-input" placeholder="Cari drama kegemaran anda...">
+            <input type="text" id="search-input" placeholder="Cari drama favorit Anda...">
             <button class="search-btn" id="search-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -44,13 +51,14 @@
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
             </button>
+            <div id="search-suggestions" class="search-suggestions"></div>
         </div>
 
         <nav>
             <ul>
                 <li class="active" data-section="home">Home</li>
                 <li data-section="vip">VIP</li>
-                <li data-section="dub-indo">Dub Indo</li>
+                <li data-section="favorites">Bookmark</li>
             </ul>
         </nav>
     </header>
@@ -60,22 +68,46 @@
         <div class="hero-overlay"></div>
         <img src="" alt="" class="hero-bg" id="hero-bg">
         <div class="hero-content">
-            <h1 id="hero-title">Memuatkan...</h1>
-            <p id="hero-desc">Sila tunggu sebentar sementara kami memuatkan drama terbaik untuk anda.</p>
-            <div class="hero-btns">
-                <button class="btn btn-primary" id="hero-play-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                    Lihat Sekarang
-                </button>
+            <div class="hero-poster-container">
+                <img src="" alt="" id="hero-poster" class="hero-poster">
+            </div>
+            <div class="hero-info">
+                <div class="hero-labels">
+                    <span class="label-trending">#Trending</span>
+                    <span id="hero-eps" class="hero-eps-label">0 Episode</span>
+                    <div id="hero-tags" class="hero-tags"></div>
+                </div>
+                <h1 id="hero-title">Memuat...</h1>
+                <div id="hero-author" class="hero-author"></div>
+                <p id="hero-desc">Mohon tunggu sebentar selagi kami memuat drama terbaik untuk Anda.</p>
+                <div class="hero-btns">
+                    <button class="btn btn-primary" id="hero-play-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        Tonton Sekarang
+                    </button>
+                </div>
             </div>
         </div>
+
+        <!-- Carousel Navigation -->
+        <button class="carousel-nav prev" id="hero-prev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button class="carousel-nav next" id="hero-next">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+
+        <!-- Carousel Dots -->
+        <div class="carousel-dots" id="hero-dots"></div>
     </div>
 
     <main id="main-content">
-        <!-- Home View -->
         <div id="home-view" class="view">
+            <!-- Continue Watching Section -->
+            <div id="history-container"></div>
+
             <!-- Trending Section -->
             <section id="trending-section">
                 <div class="section-head">
@@ -99,7 +131,7 @@
             <!-- Recommended Section -->
             <section id="recommended-section">
                 <div class="section-head">
-                    <h2>Disyorkan Untuk Anda</h2>
+                    <h2>Rekomendasi Untuk Anda</h2>
                 </div>
                 <div class="grid" id="recommended-grid">
                     <!-- Cards injected by JS -->
@@ -119,16 +151,106 @@
             </section>
         </div>
 
-        <!-- Dub Indo View -->
-        <div id="dub-view" class="view" style="display: none;">
+        <!-- Favorites/Bookmark View -->
+        <div id="favorites-view" class="view" style="display: none;">
             <section>
                 <div class="section-head">
-                    <h2>Drama Dubbing Indonesia</h2>
+                    <h2>Drama Favorit Anda</h2>
                 </div>
-                <div class="grid" id="dub-grid">
+                <div class="grid" id="favorites-grid">
+                    <!-- Cards injected by JS -->
+                </div>
+                <div id="no-favorites" style="display: none; text-align: center; padding: 50px 20px; color: var(--text-dim);">
+                    <div style="font-size: 3rem; margin-bottom: 20px;">🔖</div>
+                    <p>Anda belum menyimpan drama apapun.</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Search View -->
+        <div id="search-view" class="view" style="display: none;">
+            <section id="results-section">
+                <div class="section-head">
+                    <h2 id="search-results-title">Hasil Pencarian</h2>
+                </div>
+                <div class="grid" id="search-grid">
                     <!-- Cards injected by JS -->
                 </div>
             </section>
+            <section id="popular-section">
+                <div class="section-head">
+                    <h2>Pencarian Populer</h2>
+                </div>
+                <div class="grid" id="popular-grid">
+                    <!-- Cards injected by JS -->
+                </div>
+            </section>
+        </div>
+
+        <!-- Detail View -->
+        <div id="detail-view" class="view" style="display: none;">
+            <!-- Content dynamically injected by JS -->
+        </div>
+
+        <!-- Reels View (Immersive Player) -->
+        <div id="reels-view" class="view" style="display: none;">
+            <!-- Horizontal slider for Dramas -->
+            <div class="reels-container" id="reels-container">
+                <!-- Vertical sliders for Episodes will be injected here -->
+            </div>
+            
+            <!-- Global Player Controls Overlay -->
+            <div class="reels-overlay-global">
+                <button class="reels-back-btn" onclick="app.closeReels()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+            </div>
+
+            <!-- Reels Share Popup -->
+            <div id="reels-share-popup" class="reels-popup" style="display: none;">
+                <div class="reels-popup-content">
+                    <div class="reels-popup-header">
+                        <h3>Bagikan Drama</h3>
+                        <button class="close-popup" onclick="app.toggleShare(false)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    </div>
+                    <div class="reels-popup-body">
+                        <div class="share-link-section">
+                            <label>Salin Tautan</label>
+                            <div class="share-input-group">
+                                <input type="text" id="share-link-input" readonly>
+                                <button class="btn btn-primary" onclick="app.shareCurrent()" style="padding: 10px 20px; font-size: 0.9rem;">Salin</button>
+                            </div>
+                        </div>
+
+                        <div class="social-share-section">
+                            <label>Bagikan ke Media Sosial</label>
+                            <div class="social-grid">
+                                <button class="social-btn wa" onclick="app.shareToApp('whatsapp')">
+                                    <span class="icon">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                    </span>
+                                    <span class="text">WhatsApp</span>
+                                </button>
+                                <button class="social-btn tg" onclick="app.shareToApp('telegram')">
+                                    <span class="icon">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+                                    </span>
+                                    <span class="text">Telegram</span>
+                                </button>
+                                <button class="social-btn tw" onclick="app.shareToApp('twitter')">
+                                    <span class="icon">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                                    </span>
+                                    <span class="text">Twitter</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
     </main>
 
