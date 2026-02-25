@@ -2,3 +2,4 @@ node_modules
 *.lock
 diskusi.md
 *.log
+package-lock.json
