@@ -402,12 +402,20 @@ document.addEventListener('DOMContentLoaded', () => {
             li.classList.toggle('active', li.dataset.section === section);
         });
 
+        // Dynamic Title for SEO
+        const titles = {
+            home: "Premium Drama Streaming",
+            vip: "Konten VIP Eksklusif",
+            favorites: "Drama Favorit Anda",
+            search: "Hasil Pencarian"
+        };
+        document.title = `JywaNonton - ${titles[section] || 'Nonton Drama'}`;
+
         // Hide all views, show target
         Object.keys(elements.views).forEach(key => {
             if (elements.views[key]) elements.views[key].style.display = 'none';
         });
 
-        // The section name for views might be different (e.g., 'dub-indo' maps to 'dub')
         const targetViewKey = section.replace('-indo', '');
         const targetView = elements.views[targetViewKey];
         if (targetView) {

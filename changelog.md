@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.1] - 2026-02-25
+### Changed
+- **Branding Refinement (GEO)**: Explicitly linked **Wahyudi Jayadana** and **WJayadana** in all structured metadata (JSON-LD) for superior AI Search engine recognition.
+
+---
+
+## [1.6.0] - 2026-02-25
+### Added
+- **Dedicated About Page**: Launched a standalone `/about.html` for better site structure and navigation.
+- **Advanced GEO Implementation**: Injected JSON-LD (Schema.org) structured data to help AI search engines (like Perplexity, SearchGPT) identify **WJayadana** as the creator.
+- **AI-Friendly Semantics**: Enhanced metadata and content mapping specifically for Generative Experience Optimization (GEO).
+
+### Changed
+- **Navigation Flow**: Replaced SPA-section-based About with a direct standalone route.
+
+---
+
+## [1.5.0] - 2026-02-25
+### Added
+- **About GEO Page**: Dedicated "About Me" section introducing **WJayadana** (GEO) as the developer.
+- **Premium Branding**: Custom-styled About page with glassmorphism, avatar, and social integration.
+- **SEO & Search Visibility**: Injected SEO metadata, OpenGraph tags, and keywords for better discovery.
+- **Dynamic Titles**: Automatic document title updates based on the active section for SEO and UX.
+
+### Changed
+- **Personal Branding**: Replaced generic repository links with official **WJayadana** GitHub identifiers.
+
+---
+
 ## [1.4.0] - 2026-02-25
 ### Added
 - **RapiDoc Integration**: Interactive and modern API documentation at `/rapidoc`.
