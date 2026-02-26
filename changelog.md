@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.7.0] - 2026-02-27
+### Added
+- **"Cinematic Light" Theme System**: A complete premium overhaul for Light Mode featuring refined HSL color palettes, frosted glass effects, and dispersion shadows.
+- **Secure Admin Announcement System**: Migrated to a dynamic API (`GET /api/notice`, `POST /api/admin/notice`) with `X-API-KEY` protection for centralized site management.
+- **TikTok-style Reels Experience**: Implemented heart-pulsing interaction design, lowered controls for mobile reachability, and dynamic video "shrinking" logic when captions are expanded.
+- **Admin Authentication Docs**: Integrated `ApiKeyAuth` into Swagger and RapiDoc UI for secure administrative API testing.
+
+### Changed
+- **Themed Skeleton Loaders**: Replaced hardcoded dark loaders with theme-aware shimmering gradients that adapt to the active aesthetic.
+- **Unified Branding**: Synchronized site logo and header behavior across all pages (`index.html` and `about.html`) with the global theme engine.
+- **Notice UI Refinement**: Added scrollable announcement bodies and official Admin Name badges to prevent layout overflows.
+
+### Fixed
+- **Theme Toggle Visibility**: Resolved an issue where the moon icon was hidden in Light Mode.
+- **Reels Control Ergonomics**: Lowered metadata and action button positioning to improve one-handed operation on mobile.
+
+---
+
 ## [1.6.1] - 2026-02-25
 ### Changed
 - **Branding Refinement (GEO)**: Explicitly linked **Wahyudi Jayadana** and **WJayadana** in all structured metadata (JSON-LD) for superior AI Search engine recognition.

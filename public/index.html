@@ -17,9 +17,18 @@
     <meta property="og:url" content="https://nonton.jywa.biz.id">
     <meta property="og:title" content="JywaNonton - Premium Drama Streaming by WJayadana">
     <meta property="og:description" content="Streaming drama pendek terbaik dengan kualitas premium dan fitur cinematic.">
-    <meta property="og:image" content="/img/logo.png">
+    <meta property="og:image" content="/img/logo-dark.png">
 
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+
+    <!-- Icons & PWA -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#c026d3">
+    <meta name="msapplication-TileColor" content="#0b0b0f">
+    <meta name="theme-color" content="#0b0b0f">
 
     <!-- GEO / AI Search Optimization (JSON-LD) -->
     <script type="application/ld+json">
@@ -75,7 +84,15 @@
 
     <!-- Header -->
     <header id="main-header">
-        <div class="logo" onclick="location.reload()">JywaNonton</div>
+        <div class="header-left">
+            <div class="logo" onclick="location.reload()">
+                <img src="/img/logo-dark.png" alt="JywaNonton" id="site-logo">
+            </div>
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Ganti Tema">
+                <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+        </div>
 
         <div class="search-container">
             <input type="text" id="search-input" placeholder="Cari drama favorit Anda...">
@@ -92,7 +109,7 @@
         <nav>
             <ul>
                 <li class="active" data-section="home">Home</li>
-                <li data-section="vip">VIP</li>
+                <li data-section="history">Histori</li>
                 <li data-section="favorites">Bookmark</li>
                 <li><a href="/about.html" style="text-decoration: none; color: inherit;">About</a></li>
             </ul>
@@ -141,8 +158,6 @@
 
     <main id="main-content">
         <div id="home-view" class="view">
-            <!-- Continue Watching Section -->
-            <div id="history-container"></div>
 
             <!-- Trending Section -->
             <section id="trending-section">
@@ -175,16 +190,9 @@
             </section>
         </div>
 
-        <!-- VIP View -->
-        <div id="vip-view" class="view" style="display: none;">
-            <section>
-                <div class="section-head">
-                    <h2>Konten VIP Eksklusif</h2>
-                </div>
-                <div class="grid" id="vip-grid">
-                    <!-- Cards injected by JS -->
-                </div>
-            </section>
+        <!-- History View -->
+        <div id="history-view" class="view" style="display: none;">
+            <div id="history-container"></div>
         </div>
 
 
@@ -330,8 +338,52 @@
         </div>
     </div>
 
+    <!-- Announcement Modal -->
+    <div class="modal" id="notice-modal" style="display: none; align-items: center; justify-content: center; z-index: 3000;">
+        <div class="notice-card">
+            <div class="notice-glow"></div>
+            <div class="notice-header">
+                <div class="notice-icon">📢</div>
+                <h2 id="notice-title">Pengumuman</h2>
+                <div id="notice-admin"></div>
+            </div>
+            <div class="notice-body" id="notice-message">
+                <!-- Message injected by JS -->
+            </div>
+            <div class="notice-footer">
+                <div class="notice-checkbox-group">
+                    <input type="checkbox" id="notice-suppress-checkbox">
+                    <label for="notice-suppress-checkbox">Jangan tampilkan lagi selama 7 hari</label>
+                </div>
+                <button class="btn btn-primary" id="notice-close-btn" style="width: 100%; height: 50px; margin-top: 15px;">
+                    Siap, Lanjut!
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/node-forge@1.3.1/dist/forge.min.js"></script>
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-item active" data-section="home" onclick="app.switchView('home')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Home</span>
+        </div>
+        <div class="bottom-nav-item" data-section="history" onclick="app.switchView('history')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Histori</span>
+        </div>
+        <div class="bottom-nav-item" data-section="favorites" onclick="app.switchView('favorites')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+            <span>Bookmark</span>
+        </div>
+        <div class="bottom-nav-item" data-section="about" onclick="window.location.href='/about.html'">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>About</span>
+        </div>
+    </nav>
+
     <script src="/js/app.js"></script>
 </body>
 

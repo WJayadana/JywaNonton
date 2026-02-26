@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDrama: null,
         episodesList: [],
         activeSection: 'home',
-        caches: { home: false, vip: false, favorites: false, popular: false },
+        caches: { home: false, history: false, favorites: false, popular: false },
         detailCache: {},
         carousel: {
             data: [],
@@ -56,14 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
             trending: document.getElementById('trending-grid'),
             latest: document.getElementById('latest-grid'),
             recommended: document.getElementById('recommended-grid'),
-            vip: document.getElementById('vip-grid'),
             search: document.getElementById('search-grid'),
             popular: document.getElementById('popular-grid'),
             favorites: document.getElementById('favorites-grid')
         },
         views: {
             home: document.getElementById('home-view'),
-            vip: document.getElementById('vip-view'),
+            history: document.getElementById('history-view'),
             favorites: document.getElementById('favorites-view'),
             search: document.getElementById('search-view'),
             detail: document.getElementById('detail-view'),
@@ -77,7 +76,19 @@ document.addEventListener('DOMContentLoaded', () => {
             player: document.getElementById('player-modal')
         },
         suggestions: document.getElementById('search-suggestions'),
-        historyContainer: document.getElementById('history-container')
+        historyContainer: document.getElementById('history-container'),
+        notice: {
+            modal: document.getElementById('notice-modal'),
+            title: document.getElementById('notice-title'),
+            admin: document.getElementById('notice-admin'),
+            message: document.getElementById('notice-message'),
+            closeBtn: document.getElementById('notice-close-btn'),
+            suppressCheckbox: document.getElementById('notice-suppress-checkbox')
+        },
+        theme: {
+            toggle: document.getElementById('theme-toggle'),
+            logo: document.getElementById('site-logo')
+        }
     };
 
     // --- API Calls (Using Local Backend) ---
@@ -261,8 +272,8 @@ document.addEventListener('DOMContentLoaded', () => {
         state.history = history.slice(0, 10);
         localStorage.setItem('jywa_history', JSON.stringify(state.history));
         
-        // Refresh history UI if on home
-        if (state.activeSection === 'home') updateHistorySection();
+        // Refresh history UI if on history view
+        if (state.activeSection === 'history') updateHistorySection();
     };
 
     const updateHistorySection = () => {
@@ -397,15 +408,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const switchView = async (section) => {
         state.activeSection = section;
 
-        // Update Nav UI
-        document.querySelectorAll('nav li').forEach(li => {
-            li.classList.toggle('active', li.dataset.section === section);
-        });
+        // Update Nav UI (Top & Bottom)
+    document.querySelectorAll('nav li, .bottom-nav-item').forEach(li => {
+        li.classList.toggle('active', li.dataset.section === section);
+    });
 
         // Dynamic Title for SEO
         const titles = {
             home: "Premium Drama Streaming",
-            vip: "Konten VIP Eksklusif",
+            history: "Riwayat Menonton",
             favorites: "Drama Favorit Anda",
             search: "Hasil Pencarian"
         };
@@ -443,15 +454,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     hideLoader();
                 }
             }
-        } else if (section === 'vip') {
-            if (!state.caches.vip) {
-                try {
-                    await loadVIPData();
-                } catch (err) {
-                    console.error(`Failed to load VIP data:`, err);
-                    hideLoader();
-                }
-            }
+        } else if (section === 'history') {
+            updateHistorySection();
         } else if (section === 'search') {
             // Handled in handleSearch
         } else if (section === 'favorites') {
@@ -477,11 +481,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadHomeData = async () => {
         if (state.caches.home) {
-            updateHistorySection();
             return;
         }
         showLoader('home');
-        updateHistorySection();
         const [trending, latest, recommended] = await Promise.all([
             API.getTrending(),
             API.getLatest(),
@@ -503,40 +505,6 @@ document.addEventListener('DOMContentLoaded', () => {
         hideLoader();
     };
 
-    const loadVIPData = async () => {
-        showLoader('grid');
-        try {
-            const data = await API.getVIP();
-            elements.grids.vip.innerHTML = '';
-
-            let list = [];
-            if (Array.isArray(data)) {
-                list = data;
-            } else if (data?.records) {
-                list = data.records;
-            } else if (data?.theaterList) {
-                list = data.theaterList;
-            } else if (data?.columnVoList) {
-                // Flatten all bookList from columnVoList
-                data.columnVoList.forEach(col => {
-                    if (col.bookList) list = list.concat(col.bookList);
-                });
-            } else if (data) {
-                list = [data]; // Wrap in array if it's a single object
-            }
-
-            if (Array.isArray(list)) {
-                list.slice(0, 30).forEach(d => elements.grids.vip.appendChild(renderDramaCard(d)));
-                state.caches.vip = true;
-            } else {
-                elements.grids.vip.innerHTML = '<p style="padding: 20px; color: var(--text-dim);">Data VIP tidak tersedia.</p>';
-            }
-        } catch (err) {
-            console.error("VIP Load Error:", err);
-        } finally {
-            hideLoader();
-        }
-    };
 
     const loadFavoritesData = async () => {
         showLoader('grid');
@@ -628,13 +596,10 @@ document.addEventListener('DOMContentLoaded', () => {
             : Array.from({ length: chapters }, (_, i) => ({ chapterIndex: i + 1 }));
 
         view.innerHTML = `
-            <div class="detail-ambient-bg">
-                <img src="${cover}" alt="">
-            </div>
             <div class="detail-container">
                 <div class="detail-back-btn" onclick="app.switchView('home')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    Kembali Ke Beranda
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <span>Kembali Ke Beranda</span>
                 </div>
                 
                 <div class="detail-header-card">
@@ -652,9 +617,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const name = t.tagName || t;
                                 return `<span class="hero-tag-pill">${name}</span>`;
                             }).slice(0, 3).join('')}
-                        </div>
-                        <div class="hero-author" style="margin-bottom: 20px; color: var(--text-dim); font-size: 0.95rem; font-weight: 500;">
-                            ${intro.slice(0, 150)}${intro.length > 150 ? '...' : ''}
                         </div>
                         <p class="detail-desc">${intro}</p>
                         <div class="hero-btns">
@@ -932,7 +894,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                 Episode ${ep.chapterIndex}
                             </div>
                             <h3>${drama.bookName}</h3>
-                            <p>${drama.introduction}</p>
+                            <div class="reels-caption-container">
+                                <p class="reels-caption">${drama.introduction}</p>
+                                ${drama.introduction && drama.introduction.length > 100 ? `<span class="reels-more-btn" onclick="app.toggleReelsCaption(this)">... selengkapnya</span>` : ''}
+                            </div>
                         </div>
                         <div class="reels-actions">
                             <div class="action-btn bookmark-action ${isBookmarked(drama.bookId) ? 'active' : ''}" onclick="app.toggleBookmark('${drama.bookId}')">
@@ -1337,6 +1302,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (popup) popup.style.display = 'none';
     };
 
+    const toggleReelsCaption = (btn) => {
+        const card = btn.closest('.reels-card');
+        const isExpanded = card.classList.toggle('caption-expanded');
+        btn.textContent = isExpanded ? ' sembunyikan' : '... selengkapnya';
+    };
+
     const jumpToEp = (bookId, targetIndex) => {
         closeEpPicker();
         const dramaEl = document.querySelector(`.drama-reels[data-book-id="${bookId}"]`);
@@ -1411,10 +1382,116 @@ document.addEventListener('DOMContentLoaded', () => {
         openEpPicker,
         closeEpPicker,
         jumpToEp,
-        toggleClearMode
+        toggleClearMode,
+        toggleReelsCaption: (btn) => toggleReelsCaption(btn)
     };
 
+    // --- Admin Announcement System ---
+    const checkNotice = async () => {
+        try {
+            const res = await fetch('/api/notice?t=' + Date.now());
+            if (!res.ok) return;
+            const data = await res.json();
+
+            if (!data || !data.active) return;
+
+            const lastNoticeId = localStorage.getItem('jywa_last_notice');
+            const suppressUntil = localStorage.getItem('jywa_notice_suppress');
+            const now = Date.now();
+
+            // If it's the same notice and we are still in suppression period, skip
+            if (lastNoticeId === data.id && suppressUntil && now < parseInt(suppressUntil)) return;
+
+            // Render Notice
+            elements.notice.title.textContent = data.title;
+            
+            if (data.adminName) {
+                elements.notice.admin.textContent = `Oleh: ${data.adminName}`;
+                elements.notice.admin.style.display = 'block';
+            } else {
+                elements.notice.admin.style.display = 'none';
+            }
+
+            elements.notice.message.innerHTML = data.message.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            elements.notice.closeBtn.textContent = data.buttonText || 'Siap!';
+
+            elements.notice.closeBtn.onclick = () => {
+                localStorage.setItem('jywa_last_notice', data.id);
+                
+                if (elements.notice.suppressCheckbox.checked) {
+                    const suppressTime = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 Days
+                    localStorage.setItem('jywa_notice_suppress', suppressTime.toString());
+                } else {
+                    localStorage.removeItem('jywa_notice_suppress');
+                }
+                
+                elements.notice.modal.style.display = 'none';
+            };
+
+            elements.notice.modal.style.display = 'flex';
+        } catch (err) {
+            console.warn('Failed to check notice:', err);
+        }
+    };
+
+    // --- Scroll Effects ---
+    let lastScrollY = window.scrollY;
+    const handleScroll = throttle(() => {
+        const currentScrollY = window.scrollY;
+        const isScrollingDown = currentScrollY > lastScrollY;
+        const isPastThreshold = currentScrollY > 20;
+
+        // "Drip & Float" Logic: Dock when scrolling down, float when scrolling up
+        const shouldDock = isScrollingDown && isPastThreshold;
+
+        elements.header.classList.toggle('scrolled', shouldDock);
+        
+        const bottomNav = document.querySelector('.bottom-nav');
+        if (bottomNav) {
+            bottomNav.classList.toggle('scrolled', shouldDock);
+        }
+
+        lastScrollY = currentScrollY;
+    }, 100);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // --- Theme Management ---
+    const initTheme = () => {
+        const savedTheme = localStorage.getItem('jywa_theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+        
+        setTheme(theme);
+    };
+
+    const setTheme = (theme) => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('jywa_theme', theme);
+        
+        // Swap Logos
+        // logo-dark.png is for dark theme (light logo)
+        // logo-light.png is for light theme (dark logo)
+        if (elements.theme.logo) {
+            elements.theme.logo.src = theme === 'dark' ? '/img/logo-dark.png' : '/img/logo-light.png';
+        }
+
+        // Toggle SVG visibility is handled by CSS
+    };
+
+    const toggleTheme = () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+    };
+
+    if (elements.theme.toggle) {
+        elements.theme.toggle.addEventListener('click', toggleTheme);
+    }
+
     // --- Launch ---
+    initTheme();
+    checkNotice();
     checkDeepLink();
     switchView('home');
 });

@@ -3,6 +3,15 @@ import axios from 'axios';
 import sharp from 'sharp';
 import convert from 'heic-convert';
 import { latest, search, linkStream, trendings, foryou, populersearch, randomdrama, vip, detail, dubindo, getEpisode } from '../lib/melolo.js';
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const NOTICE_PATH = path.join(__dirname, '../public/notice.json');
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY || 'jywa-admin-123';
+
 const router = Router();
 
 // --- Helper Function untuk Error Handling ---
@@ -355,6 +364,73 @@ router.get('/proxy-image', async (req, res) => {
   } catch (error) {
     console.error("[PROXY] ERROR:", error.message);
     res.status(500).send(`Failed to proxy image: ${error.message}`);
+  }
+});
+
+/**
+ * @swagger
+ * /api/notice:
+ *   get:
+ *     summary: Get active announcement/notice
+ *     tags: [Utility]
+ *     responses:
+ *       200:
+ *         description: Notice data
+ */
+router.get('/notice', async (req, res) => {
+  try {
+    const data = await fs.readFile(NOTICE_PATH, 'utf8');
+    res.json(JSON.parse(data));
+  } catch (err) {
+    res.status(404).json({ active: false, message: "No notice found" });
+  }
+});
+
+/**
+ * @swagger
+ * /api/admin/notice:
+ *   post:
+ *     summary: Update announcement (Admin only)
+ *     tags: [Admin]
+ *     security:
+ *       - ApiKeyAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *               active:
+ *                 type: boolean
+ *               title:
+ *                 type: string
+ *               message:
+ *                 type: string
+ *               buttonText:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Notice updated successfully
+ */
+router.post('/admin/notice', async (req, res) => {
+  const apiKey = req.headers['x-api-key'];
+  if (apiKey !== ADMIN_API_KEY) {
+    return res.status(403).json({ error: 'Unauthorized: Invalid API Key' });
+  }
+
+  try {
+    const newNotice = req.body;
+    if (!newNotice.id || typeof newNotice.active !== 'boolean') {
+      return res.status(400).json({ error: 'Invalid notice data' });
+    }
+
+    await fs.writeFile(NOTICE_PATH, JSON.stringify(newNotice, null, 2), 'utf8');
+    res.json({ success: true, message: 'Notice updated successfully', data: newNotice });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to save notice', message: err.message });
   }
 });
 

@@ -47,15 +47,33 @@
       }
       .about-page-header {
         position: fixed;
-        top: 0;
-        width: 100%;
-        padding: 20px 5%;
-        background: rgba(11, 11, 15, 0.8);
-        backdrop-filter: blur(20px);
-        z-index: 1000;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        padding: 0 30px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(25px) saturate(180%);
+        -webkit-backdrop-filter: blur(25px) saturate(180%);
+        z-index: 1001;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        height: 70px;
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-premium);
+        transition: var(--transition);
+      }
+      .logo {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      }
+      .logo img {
+        height: 100%;
+        width: auto;
+        object-fit: contain;
       }
       .back-home {
         color: var(--primary);
@@ -99,20 +117,29 @@
 
   <body>
     <header class="about-page-header">
-      <a href="/" class="back-home">
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-        >
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-        Kembali ke Beranda
-      </a>
-      <div class="logo">JywaNonton</div>
+      <div class="header-left" style="display: flex; align-items: center; gap: 20px;">
+        <a href="/" class="back-home">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Kembali
+        </a>
+        <div class="logo">
+          <img src="/img/logo-dark.png" alt="JywaNonton" id="site-logo">
+        </div>
+      </div>
+      
+      <button id="theme-toggle" class="theme-toggle-btn" aria-label="Ganti Tema">
+        <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
     </header>
 
     <main class="about-container">
@@ -257,5 +284,27 @@
             </div>
         </div>
     </main> -->
+    <script>
+      // Theme Management Sync for About Page
+      const setTheme = (theme) => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('jywa_theme', theme);
+        const logo = document.getElementById('site-logo');
+        if (logo) logo.src = theme === 'dark' ? '/img/logo-dark.png' : '/img/logo-light.png';
+      };
+
+      const initTheme = () => {
+        const savedTheme = localStorage.getItem('jywa_theme');
+        const theme = savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        setTheme(theme);
+      };
+
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+      });
+
+      initTheme();
+    </script>
   </body>
 </html>
