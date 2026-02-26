@@ -1389,7 +1389,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Admin Announcement System ---
     const checkNotice = async () => {
         try {
-            const res = await fetch('/api/notice?t=' + Date.now());
+            const res = await fetch('/notice.json?t=' + Date.now());
             if (!res.ok) return;
             const data = await res.json();
 

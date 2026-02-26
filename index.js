@@ -36,15 +36,6 @@ const swaggerOptions = {
         url: `http://localhost:${PORT}`,
       },
     ],
-    components: {
-      securitySchemes: {
-        ApiKeyAuth: {
-          type: 'apiKey',
-          in: 'header',
-          name: 'x-api-key',
-        }
-      }
-    }
   },
   apis: ['./routes/*.js'], // Path to the API docs
 };
