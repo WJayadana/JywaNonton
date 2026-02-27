@@ -1159,53 +1159,72 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="reels-progress-bar"></div>
                     </div>
                 `;
+                const video = container.querySelector('video');
                 const indicator = container.querySelector('.reels-state-indicator');
+                const reelsProgressBar = container.querySelector('.reels-progress-bar');
+                const reelsProgressContainer = container.querySelector('.reels-progress-container');
 
                 const dramaEl = card.closest('.drama-reels');
                 const bookId = dramaEl ? dramaEl.dataset.bookId : null;
 
+                // Progress Bar Sync
+                video.addEventListener('timeupdate', () => {
+                    if (video.duration && reelsProgressBar) {
+                        const progress = (video.currentTime / video.duration) * 100;
+                        reelsProgressBar.style.width = `${progress}%`;
+                    }
+                });
+
                 // Auto-Play Next Episode
                 video.onended = () => {
                     const nextIdx = parseInt(card.dataset.index) + 1;
-                    console.log('Auto-playing next episode:', nextIdx);
                     if (bookId) app.jumpToEp(bookId, nextIdx);
                 };
 
                 // Save History, Track Progress & Resume Playback
                 if (dramaEl) {
+                    const epIndex = parseInt(card.dataset.index);
                     const dramaData = {
                         bookId: bookId,
                         bookName: dramaEl.dataset.bookName,
                         cover: dramaEl.dataset.bookCover
                     };
-                    
-                    const epIndex = parseInt(card.dataset.index);
 
-                    // Resume playback logic
-                    const historyItem = state.history.find(h => h.bookId === bookId && h.chapterIndex === epIndex);
-                    if (historyItem && historyItem.progress > 0 && historyItem.progress < 98) {
-                        video.addEventListener('loadedmetadata', () => {
-                            const seekTime = (historyItem.progress / 100) * video.duration;
-                            video.currentTime = seekTime;
-                        });
-                    }
-                    
-                    // Update progress on timeupdate (Throttled for reliability)
-                    video.ontimeupdate = throttle(() => {
+                    const saveHistoryThrottled = throttle((p) => {
+                        saveHistory(dramaData, epIndex, p);
+                    }, 3000);
+
+                    video.addEventListener('timeupdate', () => {
                         if (video.duration) {
-                            const progress = Math.round((video.currentTime / video.duration) * 100);
-                            saveHistory(dramaData, epIndex, progress);
+                            const p = Math.round((video.currentTime / video.duration) * 100);
+                            saveHistoryThrottled(p);
                         }
-                    }, 3000); // Save every 3 seconds of active play
+                    });
 
-                    // Immediate save on pause
                     video.onpause = () => {
                         if (video.duration) {
-                            const progress = Math.round((video.currentTime / video.duration) * 100);
-                            saveHistory(dramaData, epIndex, progress);
+                            const p = Math.round((video.currentTime / video.duration) * 100);
+                            saveHistoryThrottled(p);
                         }
                     };
 
+                    // Seek logic for progress bar
+                    if (reelsProgressContainer) {
+                        reelsProgressContainer.onclick = (e) => {
+                            e.stopPropagation();
+                            const rect = reelsProgressContainer.getBoundingClientRect();
+                            const seekPos = (e.clientX - rect.left) / rect.width;
+                            video.currentTime = seekPos * video.duration;
+                        };
+                    }
+
+                    // Resume playback
+                    const historyItem = state.history.find(h => h.bookId === bookId && h.chapterIndex === epIndex);
+                    if (historyItem && historyItem.progress > 0 && historyItem.progress < 98) {
+                        video.addEventListener('loadedmetadata', () => {
+                            video.currentTime = (historyItem.progress / 100) * video.duration;
+                        });
+                    }
                     saveHistory(dramaData, epIndex);
                 }
                 
