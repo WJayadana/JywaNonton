@@ -3276,3 +3276,19 @@ iframe {
     from { width: 0%; }
     to { width: 100%; }
 }
+
+/* Pop Animation for Dynamic Indicator */
+@keyframes sultanPop {
+    0% { transform: scale(0.9); opacity: 0.8; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.pop-anim {
+    animation: sultanPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.install-btn-mobile {
+    cursor: pointer;
+    z-index: 101;
+}

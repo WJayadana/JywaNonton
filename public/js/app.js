@@ -5,7 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const installBtnMobile = document.getElementById('pwa-install-mobile');
 
     // Premium Check: Don't show install buttons if already in Standalone Mode
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                        window.navigator.standalone === true || 
+                        window.location.search.includes('source=pwa');
     
     // Icon Dictionary for Dynamic Circle
     const sectionIcons = {
@@ -26,9 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
         detail: 'Info'
     };
 
+    // DEBUG/FORCE: If on local IP or localhost, show install button for UI testing
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/);
+
     if (isStandalone) {
         console.log('[PWA] Running in standalone mode - enabling Dynamic Sultan Nav');
         if (installBtnMobile) installBtnMobile.style.display = 'flex';
+    } else if (isLocal) {
+        // Force show in local for testing purpose since beforeinstallprompt won't fire
+        if (installBtnMobile) installBtnMobile.style.display = 'flex';
+        // But keep text as "Instal"
     }
 
     if ('serviceWorker' in navigator) {
@@ -550,22 +559,26 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo(0, 0);
 
         // Update Dynamic Sultan Circle if Standalone
-        if (isStandalone && installBtnMobile) {
+        if (installBtnMobile) {
             const circle = installBtnMobile.querySelector('.install-circle');
             const label = installBtnMobile.querySelector('span');
             const idKey = section.replace('-view', ''); // normalize
             
-            if (circle && sectionIcons[idKey]) {
-                circle.innerHTML = sectionIcons[idKey];
+            // Only update icon/text if explicitly standalone OR if we forced it for testing
+            // But if it's NOT standalone, we should only update if the label isn't "Instal"
+            if (isStandalone || label.textContent !== 'Instal') {
+                if (circle && sectionIcons[idKey]) {
+                    circle.innerHTML = sectionIcons[idKey];
+                }
+                if (label && sectionLabels[idKey]) {
+                    label.textContent = sectionLabels[idKey];
+                }
+                
+                // Subtle "Pop" animation
+                installBtnMobile.classList.remove('pop-anim');
+                void installBtnMobile.offsetWidth;
+                installBtnMobile.classList.add('pop-anim');
             }
-            if (label && sectionLabels[idKey]) {
-                label.textContent = sectionLabels[idKey];
-            }
-            
-            // Subtle "Pop" animation
-            installBtnMobile.classList.remove('pop-anim');
-            void installBtnMobile.offsetWidth;
-            installBtnMobile.classList.add('pop-anim');
         }
 
         // Load data if needed
