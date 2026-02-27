@@ -182,7 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
             favorites: document.getElementById('favorites-view'),
             search: document.getElementById('search-view'),
             detail: document.getElementById('detail-view'),
-            reels: document.getElementById('reels-view')
+            reels: document.getElementById('reels-view'),
+            about: document.getElementById('about-view')
         },
         searchTitle: document.getElementById('search-results-title'),
         searchInput: document.getElementById('search-input'),
@@ -193,6 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         suggestions: document.getElementById('search-suggestions'),
         historyContainer: document.getElementById('history-container'),
+        historyEmpty: document.getElementById('no-history'),
         notice: {
             modal: document.getElementById('notice-modal'),
             title: document.getElementById('notice-title'),
@@ -398,8 +400,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (state.history.length === 0) {
             container.innerHTML = '';
+            if (elements.historyEmpty) elements.historyEmpty.style.display = 'block';
             return;
         }
+
+        if (elements.historyEmpty) elements.historyEmpty.style.display = 'none';
 
         container.innerHTML = `
             <section class="history-section">
@@ -534,7 +539,8 @@ document.addEventListener('DOMContentLoaded', () => {
             home: "Premium Drama Streaming",
             history: "Riwayat Menonton",
             favorites: "Drama Favorit Anda",
-            search: "Hasil Pencarian"
+            search: "Hasil Pencarian",
+            about: "Tentang Kreator"
         };
         document.title = `JywaNonton - ${titles[section] || 'Nonton Drama'}`;
 
