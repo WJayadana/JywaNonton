@@ -4,6 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const installBtnDesktop = document.getElementById('pwa-install-desktop');
     const installBtnMobile = document.getElementById('pwa-install-mobile');
 
+    // Premium Check: Don't show install buttons if already in Standalone Mode
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    
+    if (isStandalone) {
+        console.log('[PWA] Running in standalone mode - hiding install UI');
+    }
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js')
@@ -14,14 +21,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle Install Prompt
     window.addEventListener('beforeinstallprompt', (e) => {
+        // Only show if not already in standalone mode
+        if (isStandalone) return;
+
         // Prevent default prompt
         e.preventDefault();
         // Save the event
         deferredPrompt = e;
         
-        // Show our custom buttons
+        // Show our custom buttons with a smooth fade
         if (installBtnDesktop) installBtnDesktop.style.display = 'block';
-        if (installBtnMobile) installBtnMobile.style.display = 'flex';
+        if (installBtnMobile) {
+            installBtnMobile.style.display = 'flex';
+            // Smoothly animate the appearance if needed
+        }
     });
 
     const triggerInstall = async () => {
@@ -1544,10 +1557,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Hide Splash Screen after animation
         const splash = document.getElementById('pwa-splash');
+        const loader = document.getElementById('loader');
+
         if (splash) {
+            // Coordinate: Hide loader behind splash to prevent ocular stacking
+            if (loader) loader.style.opacity = '0';
+
             setTimeout(() => {
                 splash.classList.add('splash-hidden');
-            }, 2500); // 2.5s to let animations breath
+                
+                // Once splash is gone, clean up and show loader if needed (or content)
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    if (loader) {
+                        loader.style.opacity = '1'; // Prepare for future transitions
+                        loader.style.display = 'none'; // But hide for now as content is ready
+                    }
+                }, 600);
+            }, 2500); 
         }
     };
 

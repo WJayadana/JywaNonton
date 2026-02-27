@@ -3058,7 +3058,7 @@ iframe {
     flex: 1;
     height: 100%;
     position: relative;
-    max-width: 20%; /* Precise 5-item split */
+    max-width: none; /* Allow flexible scaling for 4 or 5 items */
 }
 
 .bottom-nav-item svg {
