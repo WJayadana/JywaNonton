@@ -3058,6 +3058,7 @@ iframe {
     flex: 1;
     height: 100%;
     position: relative;
+    max-width: 20%; /* Precise 5-item split */
 }
 
 .bottom-nav-item svg {
@@ -3096,6 +3097,60 @@ iframe {
     box-shadow: 0 0 10px var(--primary);
 }
 
+/* Elevated PWA Install Button (Mobile) */
+.install-btn-mobile {
+    position: relative;
+    z-index: 1000;
+}
+
+.install-circle {
+    width: 65px; /* Slightly larger */
+    height: 65px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-glow));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-top: -40px; /* More elevation */
+    box-shadow: 0 10px 30px var(--primary-glow);
+    border: 4px solid var(--bg-color);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: breathing 2.5s infinite ease-in-out;
+}
+
+.install-circle svg {
+    width: 30px;
+    height: 30px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.install-btn-mobile:active .install-circle {
+    transform: scale(0.9);
+}
+
+.install-btn-mobile span {
+    margin-top: 5px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+@keyframes breathing {
+    0% { box-shadow: 0 8px 25px var(--primary-glow); }
+    50% { box-shadow: 0 8px 35px var(--primary); transform: scale(1.05); }
+    100% { box-shadow: 0 8px 25px var(--primary-glow); }
+}
+
+/* Desktop PWA Install Fixes */
+.pwa-install-desktop {
+    transition: all 0.3s ease;
+}
+
+.pwa-install-desktop:hover {
+    transform: scale(1.05);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
 @media (max-width: 768px) {
     .bottom-nav {
         display: flex;
@@ -3124,4 +3179,100 @@ iframe {
     .search-container {
         margin: 0 10px;
     }
+}
+
+/* PWA Splash Screen Overlay */
+#pwa-splash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-color);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+}
+
+#pwa-splash.splash-hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.splash-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 20px;
+}
+
+.splash-text {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.fade-in-text {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    opacity: 0;
+    transform: translateY(10px);
+    animation: splashFadeIn 0.8s forwards;
+}
+
+.glow-text {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+}
+
+.delay-1 { animation-delay: 0.3s; }
+.delay-2 { animation-delay: 0.6s; }
+
+.splash-logo-container {
+    opacity: 0;
+    transform: scale(0.9);
+    animation: splashFadeIn 0.8s forwards 0.9s;
+}
+
+#splash-logo {
+    width: 80px;
+    height: 80px;
+    filter: drop-shadow(0 0 20px rgba(124, 58, 237, 0.3));
+}
+
+.splash-loader-container {
+    width: 200px;
+    height: 4px;
+    background: var(--glass-border);
+    border-radius: 10px;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards 1.2s;
+}
+
+.splash-progress-bar {
+    width: 0%;
+    height: 100%;
+    background: var(--primary);
+    box-shadow: 0 0 10px var(--primary-glow);
+    animation: splashProgress 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards 1.2s;
+}
+
+@keyframes splashFadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes splashProgress {
+    from { width: 0%; }
+    to { width: 100%; }
 }

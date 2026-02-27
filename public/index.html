@@ -27,6 +27,13 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#c026d3">
+    
+    <!-- PWA Standalone Features -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="JywaNonton">
+    
     <meta name="msapplication-TileColor" content="#0b0b0f">
     <meta name="theme-color" content="#0b0b0f">
 
@@ -70,6 +77,22 @@
 </head>
 
 <body>
+    <!-- Premium PWA Splash Screen -->
+    <div id="pwa-splash">
+        <div class="splash-content">
+            <div class="splash-text">
+                <span class="fade-in-text">Selamat Datang</span>
+                <span class="fade-in-text delay-1">di</span>
+                <span class="fade-in-text delay-2 glow-text">Jywa Nonton</span>
+            </div>
+            <div class="splash-logo-container">
+                <img src="/img/logo-dark.png" id="splash-logo" alt="JywaNonton Logo">
+            </div>
+            <div class="splash-loader-container">
+                <div class="splash-progress-bar"></div>
+            </div>
+        </div>
+    </div>
     <!-- Skeleton Loader -->
     <div class="skeleton-loader" id="loader">
         <div class="skeleton-grid">
@@ -112,6 +135,7 @@
                 <li data-section="history">Histori</li>
                 <li data-section="favorites">Bookmark</li>
                 <li><a href="/about.html" style="text-decoration: none; color: inherit;">About</a></li>
+                <li id="pwa-install-desktop" style="cursor: pointer; color: var(--primary); font-weight: 800;">Instal App</li>
             </ul>
         </nav>
     </header>
@@ -373,6 +397,12 @@
         <div class="bottom-nav-item" data-section="history" onclick="app.switchView('history')">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             <span>Histori</span>
+        </div>
+        <div class="bottom-nav-item install-btn-mobile" id="pwa-install-mobile">
+            <div class="install-circle">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </div>
+            <span>Instal</span>
         </div>
         <div class="bottom-nav-item" data-section="favorites" onclick="app.switchView('favorites')">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>

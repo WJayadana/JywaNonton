@@ -1,4 +1,76 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- PWA Service Worker & Install Logic ---
+    let deferredPrompt;
+    const installBtnDesktop = document.getElementById('pwa-install-desktop');
+    const installBtnMobile = document.getElementById('pwa-install-mobile');
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('[PWA] Service Worker registered', reg.scope))
+                .catch(err => console.error('[PWA] Registration failed', err));
+        });
+    }
+
+    // Handle Install Prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent default prompt
+        e.preventDefault();
+        // Save the event
+        deferredPrompt = e;
+        
+        // Show our custom buttons
+        if (installBtnDesktop) installBtnDesktop.style.display = 'block';
+        if (installBtnMobile) installBtnMobile.style.display = 'flex';
+    });
+
+    const triggerInstall = async () => {
+        if (!deferredPrompt) {
+            // FALLBACK: Show help modal if native prompt is not available
+            const helpModal = document.getElementById('pwa-help-modal');
+            if (helpModal) {
+                helpModal.style.display = 'flex';
+                // Trigger animation reflow
+                helpModal.offsetHeight;
+                helpModal.classList.add('active');
+            }
+            return;
+        }
+        
+        // Show the native prompt
+        deferredPrompt.prompt();
+        
+        // Wait for user choice
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`[PWA] Install choice: ${outcome}`);
+        
+        // Reset deferredPrompt
+        deferredPrompt = null;
+        
+        // Hide our buttons
+        if (installBtnDesktop) installBtnDesktop.style.display = 'none';
+        if (installBtnMobile) installBtnMobile.style.display = 'none';
+    };
+
+    if (installBtnDesktop) installBtnDesktop.addEventListener('click', triggerInstall);
+    if (installBtnMobile) installBtnMobile.addEventListener('click', triggerInstall);
+
+    // Close Help Modal
+    const helpCloseBtn = document.getElementById('pwa-help-close-btn');
+    if (helpCloseBtn) {
+        helpCloseBtn.addEventListener('click', () => {
+            const helpModal = document.getElementById('pwa-help-modal');
+            if (helpModal) helpModal.style.display = 'none';
+        });
+    }
+
+    // Hide if already installed
+    window.addEventListener('appinstalled', (evt) => {
+        console.log('[PWA] App successfully installed');
+        if (installBtnDesktop) installBtnDesktop.style.display = 'none';
+        if (installBtnMobile) installBtnMobile.style.display = 'none';
+    });
+
     // --- Utils ---
     const debounce = (func, wait) => {
         let timeout;
@@ -1463,6 +1535,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
         
         setTheme(theme);
+
+        // Sync Splash Screen Logo
+        const splashLogo = document.getElementById('splash-logo');
+        if (splashLogo) {
+            splashLogo.src = theme === 'dark' ? '/img/logo-dark.png' : '/img/logo-light.png';
+        }
+
+        // Hide Splash Screen after animation
+        const splash = document.getElementById('pwa-splash');
+        if (splash) {
+            setTimeout(() => {
+                splash.classList.add('splash-hidden');
+            }, 2500); // 2.5s to let animations breath
+        }
     };
 
     const setTheme = (theme) => {
