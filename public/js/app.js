@@ -7,8 +7,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Premium Check: Don't show install buttons if already in Standalone Mode
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
     
+    // Icon Dictionary for Dynamic Circle
+    const sectionIcons = {
+        home: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>',
+        history: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
+        favorites: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>',
+        search: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+        reels: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>',
+        detail: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>'
+    };
+
+    const sectionLabels = {
+        home: 'Home',
+        history: 'Histori',
+        favorites: 'Bookmark',
+        search: 'Cari',
+        reels: 'Reels',
+        detail: 'Info'
+    };
+
     if (isStandalone) {
-        console.log('[PWA] Running in standalone mode - hiding install UI');
+        console.log('[PWA] Running in standalone mode - enabling Dynamic Sultan Nav');
+        if (installBtnMobile) installBtnMobile.style.display = 'flex';
     }
 
     if ('serviceWorker' in navigator) {
@@ -528,6 +548,25 @@ document.addEventListener('DOMContentLoaded', () => {
         // Header visibility in reels
         elements.header.style.display = section === 'reels' ? 'none' : 'flex';
         window.scrollTo(0, 0);
+
+        // Update Dynamic Sultan Circle if Standalone
+        if (isStandalone && installBtnMobile) {
+            const circle = installBtnMobile.querySelector('.install-circle');
+            const label = installBtnMobile.querySelector('span');
+            const idKey = section.replace('-view', ''); // normalize
+            
+            if (circle && sectionIcons[idKey]) {
+                circle.innerHTML = sectionIcons[idKey];
+            }
+            if (label && sectionLabels[idKey]) {
+                label.textContent = sectionLabels[idKey];
+            }
+            
+            // Subtle "Pop" animation
+            installBtnMobile.classList.remove('pop-anim');
+            void installBtnMobile.offsetWidth;
+            installBtnMobile.classList.add('pop-anim');
+        }
 
         // Load data if needed
         if (section === 'home') {
