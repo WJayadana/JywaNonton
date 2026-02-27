@@ -1147,8 +1147,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         <source src="${res.data.playUrl}" type="video/mp4">
                     </video>
                     <div class="reels-state-indicator"></div>
+                    <div class="reels-progress-container">
+                        <div class="reels-progress-bar"></div>
+                    </div>
                 `;
-                const video = container.querySelector('video');
                 const indicator = container.querySelector('.reels-state-indicator');
 
                 const dramaEl = card.closest('.drama-reels');

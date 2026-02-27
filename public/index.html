@@ -134,7 +134,7 @@
                 <li class="active" data-section="home">Home</li>
                 <li data-section="history">Histori</li>
                 <li data-section="favorites">Bookmark</li>
-                <li><a href="/about.html" style="text-decoration: none; color: inherit;">About</a></li>
+                <li data-section="about">About</li>
                 <li id="pwa-install-desktop" style="display: none; cursor: pointer; color: var(--primary); font-weight: 800;">Instal App</li>
             </ul>
         </nav>
@@ -408,7 +408,7 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
             <span>Bookmark</span>
         </div>
-        <div class="bottom-nav-item" data-section="about" onclick="window.location.href='/about.html'">
+        <div class="bottom-nav-item" data-section="about" onclick="app.switchView('about')">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
             <span>About</span>
         </div>
